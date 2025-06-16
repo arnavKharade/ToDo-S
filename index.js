@@ -96,7 +96,7 @@ async function appendData() {
       const editInput = document.createElement('input');
       editInput.className = 'edit-input';
       editInput.value = text.innerText;
-      d
+      
       text.replaceWith(editInput);
       editInput.focus();
       
