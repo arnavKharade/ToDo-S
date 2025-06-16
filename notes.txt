@@ -1,0 +1,183 @@
+1) api = `https://api-database-1.onrender.com/ToDo`
+
+2) Create a todo app with json server
+  a) Call api
+  b) Handle the empty promise with fetch, delete, push, post
+  c) The todo should then append to the UI from the server
+
+3) Buttons syntax 
+    
+      
+
+      let deleteBtn = document.createElement("button");
+      deleteBtn.innerText = "Delete";
+      deleteBtn.className = "delete-btn";
+      deleteBtn.style.display = el.isEdited ? "none" : "inline-block"; // Show only if not editing
+
+      // Edit Mode Buttons (Confirm/Cancel)
+      let confirmBtn = document.createElement("button");
+      confirmBtn.innerText = "✓";
+      confirmBtn.className = "confirm-btn";
+      confirmBtn.style.display = el.isEdited ? "inline-block" : "none"; // Show only if editing
+
+      let cancelBtn = document.createElement("button");
+      cancelBtn.innerText = "✗";
+      cancelBtn.className = "cancel-btn";
+      cancelBtn.style.display = el.isEdited ? "inline-block" : "none"; // Show only if editing  
+
+Note :-
+Create using methods and api should be universal for accesible in delete and edit functions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ const api = "https://api-database-1.onrender.com/ToDo";
+
+    // Fetch and display todos on load
+    window.onload = () => fetchTodos();
+
+    async function fetchTodos() {
+      try {
+        const res = await fetch(api);
+        const todos = await res.json();
+        displayTodos(todos);
+      } catch (err) {
+        console.error("Error fetching todos:", err);
+      }
+    }
+
+    async function addTodo() {
+      const input = document.getElementById("todos");
+      const todoText = input.value.trim();
+      if (!todoText) return;
+
+      const newTodo = {
+        todoText,
+        isCompleted: false,
+        isEdited: false
+      };
+
+      try {
+        await fetch(api, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTodo)
+        });
+        input.value = "";
+        fetchTodos();
+      } catch (err) {
+        console.error("Error adding todo:", err);
+      }
+    }
+
+    async function deleteTodo(id) {
+      try {
+        await fetch(`${api}/${id}`, {
+          method: "DELETE"
+        });
+        fetchTodos();
+      } catch (err) {
+        console.error("Error deleting todo:", err);
+      }
+    }
+
+    async function editTodo(id, updatedText) {
+      try {
+        await fetch(`${api}/${id}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ todoText: updatedText })
+        });
+        fetchTodos();
+      } catch (err) {
+        console.error("Error editing todo:", err);
+      }
+    }
+
+    function displayTodos(todos) {
+      const todoList = document.getElementById("todoList");
+      todoList.innerHTML = "";
+
+      todos.forEach(todo => {
+        const div = document.createElement("div");
+        const text = document.createElement("span");
+        text.innerText = todo.todoText;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = todo.todoText;
+        input.style.display = "none";
+
+        const editBtn = document.createElement("button");
+        editBtn.innerText = "Edit";
+
+        const deleteBtn = document.createElement("button");
+        deleteBtn.innerText = "Delete";
+
+        const saveBtn = document.createElement("button");
+        saveBtn.innerText = "Save";
+        saveBtn.style.display = "none";
+
+        editBtn.onclick = () => {
+          text.style.display = "none";
+          input.style.display = "inline";
+          saveBtn.style.display = "inline";
+          editBtn.style.display = "none";
+        };
+
+        saveBtn.onclick = () => {
+          editTodo(todo.id, input.value);
+        };
+
+        deleteBtn.onclick = () => deleteTodo(todo.id);
+
+        div.append(text, input, editBtn, saveBtn, deleteBtn);
+        todoList.appendChild(div);
+      });
+    }
+
+
+
+     <!DOCTYPE html>
+ <html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+ </head>
+ <body>
+  <h1>This is a ToDo App created with JSON Server</h1>
+  <input id="todos" placeholder="Enter what ToDo" type="text">
+  <button onclick="addTodo()">Add</button>
+  <div id="todoList"></div>
+
+ </body>
+ <script src="index.js"></script>
+ </html> 
